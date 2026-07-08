@@ -5,4 +5,4 @@ google-genai>=0.3.0
 PyYAML>=6.0.1
 python-dotenv>=1.0.0
 requests>=2.31.0
-pillow>=10.0.0
+html2image>=2.0.4
