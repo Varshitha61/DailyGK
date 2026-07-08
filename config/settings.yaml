@@ -1,0 +1,22 @@
+feeds:
+  - name: BBC World
+    url: http://feeds.bbci.co.uk/news/world/rss.xml
+  - name: The Hindu - National
+    url: https://www.thehindu.com/news/national/feeder/default.rss
+  - name: Science Daily
+    url: https://www.sciencedaily.com/rss/all.xml
+
+categories:
+  - India News
+  - International News
+  - Economy
+  - Environment & Science
+  - Polity & Governance
+  - Miscellaneous
+
+schedule:
+  daily_job_time: "08:00" # Time in HH:MM to run the daily facts ingestion and delivery
+  quiz_job_time: "18:00" # Time in HH:MM to run the quiz generator
+
+telegram:
+  channel_id: "@MyDailyGK_Varshii" # Target channel ID
