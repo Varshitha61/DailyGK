@@ -11,8 +11,13 @@ class Fact:
     """
     Represents a single fact extracted from news articles.
     """
-    category: str
-    fact_text: str
+    headline: str
+    beat: str
+    core_fact: str
+    why_it_matters: str
+    quick_context: Optional[str] = None
+    number_or_name: str = ""
+    static_link: Optional[str] = None
     source_link: Optional[str] = None
     date_added: Optional[str] = None  # Format: YYYY-MM-DD
     times_quizzed: int = 0

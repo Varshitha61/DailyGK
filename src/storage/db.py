@@ -42,8 +42,13 @@ def init_db():
                 CREATE TABLE IF NOT EXISTS facts (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     date_added TEXT NOT NULL,
-                    category TEXT NOT NULL,
-                    fact_text TEXT NOT NULL UNIQUE,
+                    headline TEXT NOT NULL,
+                    beat TEXT NOT NULL,
+                    core_fact TEXT NOT NULL,
+                    why_it_matters TEXT NOT NULL,
+                    quick_context TEXT,
+                    number_or_name TEXT,
+                    static_link TEXT,
                     source_link TEXT,
                     times_quizzed INTEGER DEFAULT 0,
                     last_quizzed_date TEXT
@@ -71,13 +76,23 @@ def save_facts(facts: List[dict]):
                 try:
                     link = fact.get('source_link', '')
                     cursor.execute('''
-                        INSERT INTO facts (date_added, category, fact_text, source_link)
-                        VALUES (?, ?, ?, ?)
-                    ''', (today_str, fact['category'], fact['fact_text'], link))
+                        INSERT INTO facts (date_added, headline, beat, core_fact, why_it_matters, quick_context, number_or_name, static_link, source_link)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (
+                        today_str, 
+                        fact['headline'], 
+                        fact['beat'], 
+                        fact['core_fact'], 
+                        fact['why_it_matters'],
+                        fact.get('quick_context', ''),
+                        fact.get('number_or_name', ''),
+                        fact.get('static_link', ''),
+                        link
+                    ))
                     inserted_count += 1
                 except sqlite3.IntegrityError:
                     # Skip duplicate facts
-                    logger.debug(f"Skipped duplicate fact: {fact['fact_text'][:30]}...")
+                    logger.debug(f"Skipped duplicate fact: {fact['headline'][:30]}...")
                     
             conn.commit()
         logger.info(f"Successfully saved {inserted_count} new facts to the database.")
@@ -109,8 +124,13 @@ def get_facts_by_date(date_str: str) -> List[Fact]:
                 facts.append(Fact(
                     id=row['id'],
                     date_added=row['date_added'],
-                    category=row['category'],
-                    fact_text=row['fact_text'],
+                    headline=row['headline'],
+                    beat=row['beat'],
+                    core_fact=row['core_fact'],
+                    why_it_matters=row['why_it_matters'],
+                    quick_context=row['quick_context'],
+                    number_or_name=row['number_or_name'],
+                    static_link=row['static_link'],
                     source_link=row['source_link'],
                     times_quizzed=row['times_quizzed'],
                     last_quizzed_date=row['last_quizzed_date']
@@ -140,8 +160,13 @@ def get_facts_for_quiz(limit: int = 3) -> List[Fact]:
                 facts.append(Fact(
                     id=row['id'],
                     date_added=row['date_added'],
-                    category=row['category'],
-                    fact_text=row['fact_text'],
+                    headline=row['headline'],
+                    beat=row['beat'],
+                    core_fact=row['core_fact'],
+                    why_it_matters=row['why_it_matters'],
+                    quick_context=row['quick_context'],
+                    number_or_name=row['number_or_name'],
+                    static_link=row['static_link'],
                     source_link=row['source_link'],
                     times_quizzed=row['times_quizzed'],
                     last_quizzed_date=row['last_quizzed_date']
@@ -175,9 +200,15 @@ if __name__ == "__main__":
     
     # Save dummy data
     dummy_facts = [
-        {"category": "Science", "fact_text": "Water boils at 100 degrees Celsius at sea level."},
-        {"category": "Polity", "fact_text": "The Rajya Sabha is the upper house of the Parliament of India."},
-        {"category": "Sports", "fact_text": "The first modern Olympic Games were held in Athens in 1896."}
+        {
+            "headline": "Test Headline",
+            "beat": "Science and Technology", 
+            "core_fact": "Water boils at 100 degrees Celsius at sea level.",
+            "why_it_matters": "Fundamental physics property.",
+            "quick_context": "At standard atmospheric pressure.",
+            "number_or_name": "100",
+            "static_link": "Connected to thermodynamics."
+        }
     ]
     save_facts(dummy_facts)
     
@@ -185,6 +216,6 @@ if __name__ == "__main__":
     todays_facts = get_todays_facts()
     print(f"\nRetrieved {len(todays_facts)} facts added today:")
     for f in todays_facts:
-        print(f"[{f.category}] {f.fact_text}")
+        print(f"[{f.beat}] {f.headline}")
         
     print("\nStorage Module test complete.")

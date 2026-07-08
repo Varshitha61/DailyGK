@@ -22,8 +22,13 @@ load_dotenv()
 
 # Pydantic models for structured output
 class Fact(BaseModel):
-    category: str
-    fact_text: str
+    headline: str
+    beat: str
+    core_fact: str
+    why_it_matters: str
+    quick_context: str
+    number_or_name: str
+    static_link: str
     source_link: str
 
 class FactList(BaseModel):
@@ -67,14 +72,17 @@ def summarize_articles(articles: List[Dict[str, str]], target_count: int = 10) -
 
     prompt = (
         f"You are an expert news curator for UPSC (Union Public Service Commission) civil services candidates.\n"
-        f"Your task is to review the provided daily news articles and extract {target_count} highly important, factual one-line news updates.\n"
-        "The points should strictly cover current affairs highly relevant to the UPSC syllabus.\n"
-        "Focus heavily on distinguishing:\n"
-        "1. Major 'India News' and national developments.\n"
-        "2. Major 'International News' and geopolitics.\n"
-        "Each fact must include the EXACT 'source_link' from the article it was extracted from.\n"
-        "Each fact must be tagged with an appropriate category from: India News, International News, Economy, Environment & Science, Polity & Governance, Miscellaneous.\n"
-        "Keep the facts objective, analytical, concise, and easy to read. DO NOT hallucinate; rely strictly on the provided articles."
+        f"Your task is to review the provided daily news articles and extract {target_count} highly important, factual news updates.\n"
+        "Strict Formatting Rules for each news update:\n"
+        "1. Headline: One short, clear line, max 10 to 12 words, states the core fact directly.\n"
+        "2. Beat: Must be one of the following exact categories: Polity and Governance, Economy, International Relations, Science and Technology, Environment and Ecology, Government Schemes and Welfare, Defence and Security, Awards, Honours, and Appointments, Sports, Reports, Indices, and Rankings.\n"
+        "3. Core Fact: 1 to 2 sentences stating what happened, who is involved, and when.\n"
+        "4. Why It Matters: 1 to 2 sentences explaining the relevance or impact in plain language.\n"
+        "5. Quick Context: Optional context (if any), 1 sentence max. (Leave empty if not needed).\n"
+        "6. Number or Name: The single most quiz-worthy or memorable detail.\n"
+        "7. Static Link: A static fact connecting the news to a historical event, geography, or constitutional article (e.g., 'this river is also known for X historical event').\n"
+        "8. Source Link: The exact URL from the provided article.\n"
+        "CRITICAL CONSTRAINT: Each news item MUST be under 60 words total across all text fields (excluding links). Use simple language, no vague words like 'recently'. DO NOT hallucinate; rely strictly on the provided articles."
     )
 
     logger.info(f"Sending {len(articles_to_process)} articles to Gemini for summarization...")
@@ -98,7 +106,16 @@ def summarize_articles(articles: List[Dict[str, str]], target_count: int = 10) -
             return []
             
         structured_facts = [
-            {"category": fact.category, "fact_text": fact.fact_text, "source_link": fact.source_link}
+            {
+                "headline": fact.headline,
+                "beat": fact.beat,
+                "core_fact": fact.core_fact,
+                "why_it_matters": fact.why_it_matters,
+                "quick_context": fact.quick_context,
+                "number_or_name": fact.number_or_name,
+                "static_link": fact.static_link,
+                "source_link": fact.source_link
+            }
             for fact in fact_list_data.facts
         ]
         
@@ -132,6 +149,6 @@ if __name__ == "__main__":
             facts = summarize_articles(articles)
             print("\nGenerated Facts:")
             for f in facts:
-                print(f"[{f['category']}] {f['fact_text']}")
+                print(f"[{f['beat']}] {f['headline']}\n{f['core_fact']}")
     except Exception as e:
         print(f"Test failed: {e}")
