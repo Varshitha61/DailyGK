@@ -28,17 +28,22 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 async def generate_newspaper_image() -> bytes:
-    """Uses Gemini API to generate a newspaper-style image."""
+    """Uses Pollinations API to generate a newspaper-style image."""
     try:
-        client = initialize_client()
-        prompt = "A highly aesthetic, modern digital newspaper front page titled 'DailyGK', designed specifically for UPSC and SSC aspirants. It features sections for Polity, Economy, and International Relations with engaging infographics, bold headlines, clean layout, sleek dark mode aesthetic with vibrant accent colors (gold and cyan), and a premium, inviting feel that tempts users to read. UI mockup style, high quality, professional."
-        response = client.models.generate_images(
-            model='imagen-3.0-generate-001',
-            prompt=prompt,
-            config=dict(number_of_images=1, output_mime_type="image/jpeg")
-        )
-        for image in response.generated_images:
-            return image.image.image_bytes
+        import requests
+        import urllib.parse
+        
+        prompt = "A highly aesthetic modern digital newspaper front page titled DailyGK, designed for UPSC aspirants. Beautiful typography, elegant layout, premium feel, dark mode."
+        encoded_prompt = urllib.parse.quote(prompt)
+        url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&nologo=true"
+        
+        logger.info("Generating image via pollinations.ai...")
+        response = requests.get(url, timeout=30)
+        
+        if response.status_code == 200:
+            return response.content
+        else:
+            logger.error(f"Failed to fetch image: {response.status_code}")
     except Exception as e:
         logger.error(f"Error generating image: {e}")
     return None
