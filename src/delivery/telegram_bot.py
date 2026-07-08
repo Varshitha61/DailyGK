@@ -27,25 +27,14 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
-async def generate_newspaper_image() -> bytes:
-    """Uses Pollinations API to generate a newspaper-style image."""
+async def generate_newspaper_image(facts: List[Fact]) -> bytes:
+    """Uses Python Pillow to programmatically generate a crisp newspaper image."""
     try:
-        import requests
-        import urllib.parse
-        
-        prompt = "A highly aesthetic modern digital newspaper front page titled DailyGK, designed for UPSC aspirants. Beautiful typography, elegant layout, premium feel, dark mode."
-        encoded_prompt = urllib.parse.quote(prompt)
-        url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width=1024&height=1024&nologo=true"
-        
-        logger.info("Generating image via pollinations.ai...")
-        response = requests.get(url, timeout=30)
-        
-        if response.status_code == 200:
-            return response.content
-        else:
-            logger.error(f"Failed to fetch image: {response.status_code}")
+        from src.delivery.image_generator import generate_newspaper_image_pil
+        logger.info("Generating crisp image via PIL...")
+        return generate_newspaper_image_pil(facts)
     except Exception as e:
-        logger.error(f"Error generating image: {e}")
+        logger.error(f"Error generating PIL image: {e}")
     return None
 
 def get_weekly_revision() -> str:
@@ -140,7 +129,7 @@ async def send_daily_facts(facts: List[Fact] = None):
     message += get_weekly_revision()
     
     # Generate image
-    image_bytes = await generate_newspaper_image()
+    image_bytes = await generate_newspaper_image(facts)
 
     try:
         logger.info(f"Sending daily facts to {channel_id}...")
