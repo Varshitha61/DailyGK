@@ -25,13 +25,9 @@ def generate_newspaper_image_pil(facts: List[Fact]) -> bytes:
     """Generates a crisp infographic layout using HTML/CSS and html2image."""
     from html2image import Html2Image
     
-    browser_executable = None
-    if os.path.exists('/usr/bin/chromium-browser'):
-        browser_executable = '/usr/bin/chromium-browser'
-    elif os.path.exists('/usr/bin/chromium'):
-        browser_executable = '/usr/bin/chromium'
-        
-    hti = Html2Image(browser_executable=browser_executable, output_path='.', size=(900, 1300))
+    hti = Html2Image(output_path='.', size=(900, 1300))
+    # Keep temporary HTML files in the current workspace to avoid /tmp access issues in sandboxed environments
+    hti.temp_path = '.'
     # Add necessary flags for Chrome/Chromium to run headlessly in CI (like GitHub Actions)
     # This prevents the "ERR_FILE_NOT_FOUND" when Chrome tries to read the temporary HTML file.
     hti.browser.flags.extend([
