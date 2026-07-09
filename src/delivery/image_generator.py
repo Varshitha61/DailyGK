@@ -1,7 +1,10 @@
 import os
+import logging
 from typing import List
 from datetime import datetime
 from src.storage.models import Fact
+
+logger = logging.getLogger(__name__)
 
 def get_badge_color(beat: str) -> str:
     beat_lower = beat.lower()
@@ -22,7 +25,13 @@ def generate_newspaper_image_pil(facts: List[Fact]) -> bytes:
     """Generates a crisp infographic layout using HTML/CSS and html2image."""
     from html2image import Html2Image
     
-    hti = Html2Image(output_path='.', size=(900, 1300))
+    browser_executable = None
+    if os.path.exists('/usr/bin/chromium-browser'):
+        browser_executable = '/usr/bin/chromium-browser'
+    elif os.path.exists('/usr/bin/chromium'):
+        browser_executable = '/usr/bin/chromium'
+        
+    hti = Html2Image(browser_executable=browser_executable, output_path='.', size=(900, 1300))
     
     date_str = datetime.now().strftime("%B %d, %Y")
     
@@ -193,7 +202,7 @@ def generate_newspaper_image_pil(facts: List[Fact]) -> bytes:
             
         return image_bytes
     except Exception as e:
-        print(f"Error generating html2image: {e}")
+        logger.exception("Error generating html2image")
         return None
 
 if __name__ == "__main__":
