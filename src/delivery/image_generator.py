@@ -32,6 +32,14 @@ def generate_newspaper_image_pil(facts: List[Fact]) -> bytes:
         browser_executable = '/usr/bin/chromium'
         
     hti = Html2Image(browser_executable=browser_executable, output_path='.', size=(900, 1300))
+    # Add necessary flags for Chrome/Chromium to run headlessly in CI (like GitHub Actions)
+    # This prevents the "ERR_FILE_NOT_FOUND" when Chrome tries to read the temporary HTML file.
+    hti.browser.flags.extend([
+        '--no-sandbox', 
+        '--disable-gpu', 
+        '--allow-file-access-from-files', 
+        '--disable-dev-shm-usage'
+    ])
     
     date_str = datetime.now().strftime("%B %d, %Y")
     
