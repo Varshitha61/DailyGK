@@ -25,7 +25,7 @@ def generate_newspaper_image_pil(facts: List[Fact]) -> bytes:
     """Generates a crisp infographic layout using HTML/CSS and html2image."""
     from html2image import Html2Image
     
-    hti = Html2Image(output_path='.', size=(900, 1300))
+    hti = Html2Image(output_path='.', size=(900, 1800))
     # Keep temporary HTML files in the current workspace to avoid /tmp access issues in sandboxed environments
     hti.temp_path = '.'
     # Add necessary flags for Chrome/Chromium to run headlessly in CI (like GitHub Actions)
