@@ -3,6 +3,7 @@ Module for sending messages and quizzes via Telegram.
 """
 import os
 import logging
+import asyncio
 import requests
 from typing import List
 from dotenv import load_dotenv
@@ -212,6 +213,12 @@ def run_send_quiz_poll(question: str, options: List[str], correct_option_id: int
     asyncio.run(send_quiz_poll(question, options, correct_option_id))
 
 if __name__ == "__main__":
-    print("Testing Telegram Delivery Module...")
-    # Will send the dummy facts we inserted in Step 3
-    run_send_daily_facts()
+    print("Testing Telegram Delivery Module with Poster...")
+    dummy = [
+        Fact(headline="Supreme Court Upholds Article 370 Abrogation", beat="Polity", core_fact="The Supreme Court unanimously upheld the President's order abrogating Article 370 in J&K.", why_it_matters="Reaffirms integration.", number_or_name="Article 370"),
+        Fact(headline="RBI Keeps Repo Rate Unchanged at 6.5%", beat="Economy", core_fact="The Monetary Policy Committee decided to maintain the status quo.", why_it_matters="Controls inflation.", number_or_name="6.5%"),
+        Fact(headline="ISRO Successfully Launches XPoSat Mission", beat="Science", core_fact="India's first dedicated polarimetry mission to study X-ray emission.", why_it_matters="Advances astrophysics.", number_or_name="XPoSat"),
+        Fact(headline="COP28 Summit Concludes in Dubai with Historic Deal", beat="International", core_fact="Nations agreed to transition away from fossil fuels in energy systems.", why_it_matters="Crucial for climate goals.", number_or_name="COP28")
+    ]
+    todays_facts = get_todays_facts() or dummy
+    run_send_daily_facts(todays_facts)
