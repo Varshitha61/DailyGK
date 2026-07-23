@@ -21,7 +21,7 @@ Every morning at exactly **6:00 AM IST**, the system wakes up via GitHub Actions
 
 ### ✨ Key Features
 - 🤖 **AI Summarization:** Uses Gemini AI to digest long news articles into crispy, exam-relevant bullet points (Core Fact, Why It Matters, Key Takeaways).
-- 🎨 **Automated Infographics:** Dynamically generates a beautiful, crisp HTML/CSS "Daily Brief" layout and renders it into a JPEG using `html2image` and headless Chromium.
+- 🎨 **HD Infographic Posters:** Dynamically generates a modern high-resolution dark-mode poster layout featuring top story highlights, category-colored badges, key exam pointers, and PIL auto-cropping.
 - 🚀 **Zero-Maintenance Delivery:** Runs entirely on GitHub Actions on a cron schedule. No servers to maintain!
 - 📊 **Telegram Integration:** Seamlessly posts the generated infographic, detailed text breakdowns, and native interactive Quiz Polls to Telegram.
 - 📚 **Weekly Revisions:** Automatically compiles and sends an end-of-week revision sheet every Sunday.
